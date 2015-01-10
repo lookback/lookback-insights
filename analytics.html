@@ -1,0 +1,32 @@
+<head>
+  <title>analytics</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+  {{> insights}}
+  {{> newInsight}}
+</body>
+
+<template name="insights">
+  {{> reactiveTable settings=tableSettings}}
+</template>
+
+<template name="newInsight">
+  <h1>New insight</h1>
+  <form data-new-insight>
+    {{> inputWithLabel label='type' attr='data-type'}}
+    {{> inputWithLabel label='area' attr='data-area'}}
+    {{> inputWithLabel label='artifact' attr='data-artifact'}}
+    {{> inputWithLabel label='company name' attr='data-company-name'}}
+    {{> inputWithLabel label='company type' attr='data-company-type'}}
+    {{> inputWithLabel label='project' attr='data-project'}}
+    <button>add</button>
+  </form>
+</template>
+
+<template name="inputWithLabel">
+  <p>{{label}}</p>
+  <input {{attr}} type="text" placeholder="{{label}}">
+</template>
