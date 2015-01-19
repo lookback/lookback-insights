@@ -1,6 +1,26 @@
 Insights = new Meteor.Collection('insights');
 
+Accounts.config({
+  forbidClientAccountCreation : true
+});
+
+Meteor.methods({
+  addInsight: function (props) {
+    // Make sure the user is logged in before inserting a task
+    if (! Meteor.userId()) {
+      throw new Meteor.Error("not-authorized");
+    }
+    
+    Insights.insert(_.extend(_props, {
+      author: Meteor.user().emails[0].address,
+    }));
+  }
+});
+
+
 if (Meteor.isClient) {
+  Meteor.subscribe("insights");
+  
   Template.insights.helpers({
     tableSettings: function() {
       return {
@@ -15,6 +35,7 @@ if (Meteor.isClient) {
           'city',
           'githubUrl',
           'date',
+          'author',
         ]
 
       }
@@ -34,7 +55,7 @@ if (Meteor.isClient) {
       var githubUrl = tmpl.find('input[data-githubUrl]').value;
       var date = tmpl.find('input[data-date]').value;
 
-      Insights.insert({
+      Meteor.call("addInsight",{
         type: type,
         area: area,
         artifact: artifact,
@@ -176,6 +197,14 @@ function drawChart() {
 }
 
 if (Meteor.isServer) {
+  Meteor.publish("insights", function () {
+    if(this.userId) {
+      return Insights.find();
+    } else {
+      return null;
+    }
+  });
+  
   Meteor.startup(function () {
     // code to run on server at startup
   });
