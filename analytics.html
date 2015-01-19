@@ -1,11 +1,14 @@
 <head>
   <title>Lookback Insight Machine</title>
+  <script src="client/Chart.js"></script>
+  <script src="client/underscore-min.js"></script>
 </head>
 
 <body>
   <h1>Lookback Insight Machine</h1>
 
   {{> newInsight}}
+  {{> charts}}
   {{> insights}}
 
 </body>
@@ -13,6 +16,11 @@
 <template name="insights">
   <h1>Existing Data</h1>
   {{> reactiveTable settings=tableSettings}}
+</template>
+
+<template name="charts">
+  <h1>Charts</h1>
+  <canvas id="insight-chart" width="200" height="200"></canvas>
 </template>
 
 <template name="newInsight">
