@@ -59,6 +59,7 @@ var myRadarChart;
 var datasetTemplates = [
   {
     fillColor: "rgba(220,120,120,0.2)",
+    highlightFill: "#fff",
     strokeColor: "rgba(220,120,120,1)",
     pointColor: "rgba(220,120,120,1)",
     pointStrokeColor: "#fff",
@@ -68,6 +69,7 @@ var datasetTemplates = [
   },
   {
     fillColor: "rgba(127,205,127,0.2)",
+    highlightFill: "#fff",
     strokeColor: "rgba(127,205,127,1)",
     pointColor: "rgba(127,205,127,1)",
     pointStrokeColor: "#fff",
@@ -77,6 +79,7 @@ var datasetTemplates = [
   },
   {
     fillColor: "rgba(127,127,205,0.2)",
+    highlightFill: "#fff",
     strokeColor: "rgba(127,127,205,1)",
     pointColor: "rgba(127,127,205,1)",
     pointStrokeColor: "#fff",
@@ -86,6 +89,7 @@ var datasetTemplates = [
   },
   {
     fillColor: "rgba(151,205,205,0.2)",
+    highlightFill: "#fff",
     strokeColor: "rgba(151,187,205,1)",
     pointColor: "rgba(151,187,205,1)",
     pointStrokeColor: "#fff",
@@ -98,6 +102,7 @@ var datasetTemplateIndex = 0;
 
 function drawChart() {
   var insights = Insights.find().fetch()
+  var types = []
   var countsByTypeByArea = {} /* like
     {
       "Onboarding": {
@@ -107,6 +112,8 @@ function drawChart() {
       }
     }
   */
+  
+  datasetTemplateIndex = 0
 
   for(var i = 0; i < insights.length; i++) {
     var insight = insights[i];
@@ -117,22 +124,29 @@ function drawChart() {
     countsByType[insight.companyType] = count
     
     countsByTypeByArea[insight.area] = countsByType
+    
+    if(!_.contains(types, insight.companyType)) {
+      types.push(insight.companyType);
+    }
   }
-  
-  console.log("source", countsByTypeByArea);
   
   var areas = _.keys(countsByTypeByArea)
   var datasets = {}
   for(var i = 0; i < areas.length; i++) {
     var area = areas[i];
     var countsByType = countsByTypeByArea[area];
-    var types = Object.keys(countsByType);
     for(var j = 0; j < types.length; j++) {
       var type = types[j];
       var count = countsByType[type] || 0;
-      var dataset = datasets[type] || datasetTemplates[datasetTemplateIndex++];
+      if(!datasets[type]) {
+        datasets[type] = datasetTemplates[datasetTemplateIndex++];
+        datasets[type].data = []
+      }
+      var dataset = datasets[type];
       dataset.label = type
       dataset.data.push(count);
+      
+      //console.log("type", type, "Area", area, "new count", count)
       
       datasets[type] = dataset;
     }
@@ -140,6 +154,9 @@ function drawChart() {
   
   if(_.size(datasets) == 0)
     return;
+  
+  //console.log("Labels:", areas)
+  //console.log("New data sets:", _.values(datasets));
   
   document.getElementById("insight-chart-container").innerHTML = "";
   document.getElementById("insight-chart-container").innerHTML = '<canvas id="insight-chart" width="250" height="250"></canvas>'
