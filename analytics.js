@@ -35,6 +35,7 @@ if (Meteor.isClient) {
           'city',
           'githubUrl',
           'date',
+          'interviewee',
           'author',
         ]
 
@@ -122,7 +123,7 @@ var datasetTemplates = [
 var datasetTemplateIndex = 0;
 
 function drawChart() {
-  var insights = Insights.find().fetch()
+  var insights = Insights.find({type: "PP"}).fetch()
   var types = []
   var countsByTypeByArea = {} /* like
     {
@@ -130,7 +131,7 @@ function drawChart() {
         "S": 3,
         "M": 12,
         "L": 5,
-      }
+      },...
     }
   */
   
@@ -152,9 +153,12 @@ function drawChart() {
   }
   
   var areas = _.keys(countsByTypeByArea)
+  var topAreas = _.sortBy(areas, function(area) {
+    return -_.reduce(_.values(countsByTypeByArea[area]), function(memo, n) { return memo+n; }, 0);
+  }).slice(0, 6);
   var datasets = {}
-  for(var i = 0; i < areas.length; i++) {
-    var area = areas[i];
+  for(var i = 0; i < topAreas.length; i++) {
+    var area = topAreas[i];
     var countsByType = countsByTypeByArea[area];
     for(var j = 0; j < types.length; j++) {
       var type = types[j];
@@ -180,13 +184,13 @@ function drawChart() {
   //console.log("New data sets:", _.values(datasets));
   
   document.getElementById("insight-chart-container").innerHTML = "";
-  document.getElementById("insight-chart-container").innerHTML = '<canvas id="insight-chart" width="250" height="250"></canvas>'
+  document.getElementById("insight-chart-container").innerHTML = '<canvas id="insight-chart" width="500" height="500"></canvas>'
   var ctx = document.getElementById("insight-chart").getContext("2d");
   if(myRadarChart)
     myRadarChart.destroy();
   
   var myRadarChart = new Chart(ctx).Radar({
-    labels: areas,
+    labels: topAreas,
     datasets: _.values(datasets)
   }, {
     responsive: false,
