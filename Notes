@@ -1,4 +1,0 @@
-mongoimport -h localhost:3001 --db meteor --collection insights --type csv --fields type,area,artifact,companyName,city,date,githubUrl,interviewee,companyType --file /Users/nevyn/Downloads/Insights\ 2014\ by\ Heidi\ -\ Sheet1.csv
-mongodump -h localhost:3001 -d meteor
-meteor mongo --url insight-machine.meteor.comj
-mongorestore -u client-a479a123 -p ... -h production-db-d3.meteor.io:27017 -db insight-machine_meteor_com dump/meteor
