@@ -1,0 +1,41 @@
+{
+  "name": "lookback-insights",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha --compilers js:babel-core/register --require ./test/test_helper.js --recursive",
+    "test:watch": "npm run test -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lookback/lookback-insights.git"
+  },
+  "keywords": [],
+  "author": "Francis Byrne <byrnify@gmail.com> (http://francisbyrne.github.io/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lookback/lookback-insights/issues"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "homepage": "https://github.com/lookback/lookback-insights",
+  "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-core": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
+    "chai": "^3.4.1",
+    "chai-immutable": "^1.5.3",
+    "mocha": "^2.4.3",
+    "watch": "latest"
+  },
+  "dependencies": {
+    "immutable": "^3.7.6"
+  }
+}
