@@ -4,13 +4,15 @@ Accounts.config({
   forbidClientAccountCreation : true
 });
 
+
+
 Meteor.methods({
   addInsight: function (props) {
     // Make sure the user is logged in before inserting a task
     if (! Meteor.userId()) {
       throw new Meteor.Error("not-authorized");
     }
-    
+
     Insights.insert(_.extend(_props, {
       author: Meteor.user().emails[0].address,
     }));
@@ -20,7 +22,7 @@ Meteor.methods({
 
 if (Meteor.isClient) {
   Meteor.subscribe("insights");
-  
+
   Template.insights.helpers({
     tableSettings: function() {
       return {
@@ -69,11 +71,23 @@ if (Meteor.isClient) {
       });
     }
   });
-  
-  Template.charts.rendered = function() {  
+
+  Template.charts.rendered = function() {
     Deps.autorun(function () { drawChart(); });
-    
+
   };
+
+  Template.login.events({
+    'click [data-login-button]': (evt, tmpl) => {
+      Meteor.loginWithGoogle(
+        {requestPermissions: ['email']}
+      , (error) => {
+        if (error)
+          console.log(error.reason);
+        }
+      )
+    }
+  });
 }
 
 var myRadarChart;
@@ -134,24 +148,24 @@ function drawChart() {
       },...
     }
   */
-  
+
   datasetTemplateIndex = 0
 
   for(var i = 0; i < insights.length; i++) {
     var insight = insights[i];
-    
+
     var countsByType = countsByTypeByArea[insight.area] || {}
-    
+
     var count = (countsByType[insight.companyType] || 0) + 1
     countsByType[insight.companyType] = count
-    
+
     countsByTypeByArea[insight.area] = countsByType
-    
+
     if(!_.contains(types, insight.companyType)) {
       types.push(insight.companyType);
     }
   }
-  
+
   var areas = _.keys(countsByTypeByArea)
   var topAreas = _.sortBy(areas, function(area) {
     return -_.reduce(_.values(countsByTypeByArea[area]), function(memo, n) { return memo+n; }, 0);
@@ -170,25 +184,25 @@ function drawChart() {
       var dataset = datasets[type];
       dataset.label = type
       dataset.data.push(count);
-      
+
       //console.log("type", type, "Area", area, "new count", count)
-      
+
       datasets[type] = dataset;
     }
   }
-  
+
   if(_.size(datasets) == 0)
     return;
-  
+
   //console.log("Labels:", areas)
   //console.log("New data sets:", _.values(datasets));
-  
+
   document.getElementById("insight-chart-container").innerHTML = "";
   document.getElementById("insight-chart-container").innerHTML = '<canvas id="insight-chart" width="500" height="500"></canvas>'
   var ctx = document.getElementById("insight-chart").getContext("2d");
   if(myRadarChart)
     myRadarChart.destroy();
-  
+
   var myRadarChart = new Chart(ctx).Radar({
     labels: topAreas,
     datasets: _.values(datasets)
@@ -196,7 +210,7 @@ function drawChart() {
     responsive: false,
     legendTemplate : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>; color:<%=datasets[i].pointColor%>;"><%if(datasets[i].label){%><%=datasets[i].label%><%}%></span></li><%}%></ul>'
   });
-  
+
   document.getElementById("insight-chart-legend-container").innerHTML = myRadarChart.generateLegend();
 }
 
@@ -208,7 +222,7 @@ if (Meteor.isServer) {
       return null;
     }
   });
-  
+
   Meteor.startup(function () {
     // code to run on server at startup
   });

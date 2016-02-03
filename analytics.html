@@ -13,9 +13,8 @@
   {{> newInsight}}
   {{> charts}}
   {{> insights}}
-  
-  {{/if}}
 
+  {{/if}}
 </body>
 
 <template name="insights">
@@ -34,14 +33,14 @@
   <form data-new-insight>
     <h2>Data</h2>
     <select name="data-type" data-type style="width:180px">
-        <option value="PP">Pain Points</option> 
+        <option value="PP">Pain Points</option>
         <option value="Requests">Requests</option>
         <option value="Feature">Feature</option>
         <option value="Love">Love</option>
         <option value="Bug">Bug</option>
         <option value="Insight">Insight</option>
     </select>
-    
+
     <input data-area type="text" placeholder="Area" style="width:180px" /><br />
     <textarea data-artifact placeholder="{{label}}" rows="7" cols="54"></textarea>
 
